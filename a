@@ -1,0 +1,36 @@
+[1mdiff --git a/Application/Services/TshirtService.cs b/Application/Services/TshirtService.cs[m
+[1mindex 5203edf..89940c1 100644[m
+[1m--- a/Application/Services/TshirtService.cs[m
+[1m+++ b/Application/Services/TshirtService.cs[m
+[36m@@ -68,21 +68,21 @@[m [mnamespace CompanyTshirt.Application.Services[m
+ [m
+         public TshirtResponse Update(Guid id, TshirtRequest tshirt)[m
+         {[m
+[31m-            var request = _tshirtRepository.GetById(id);[m
+[31m-            if (request == null)[m
+[32m+[m[32m            var tshirtToUpdate = _tshirtRepository.GetById(id);[m
+[32m+[m[32m            if (tshirtToUpdate == null)[m
+             {[m
+                 throw new NotFoundException($"dont sherch a tshirt with this id'{id}'.");[m
+             }[m
+ [m
+[31m-            request.Name = tshirt.Name;[m
+[31m-            request.Description = tshirt.Description;[m
+[31m-            request.Price = tshirt.Price;[m
+[31m-            request.Stock = tshirt.Stock;[m
+[31m-            request.Season = tshirt.Season;[m
+[31m-            request.ImageUrl = tshirt.ImageUrl;[m
+[31m-[m
+[31m-            _tshirtRepository.Update(request);[m
+[32m+[m[32m            tshirtToUpdate.Name = tshirt.Name;[m
+[32m+[m[32m            tshirtToUpdate.Description = tshirt.Description;[m
+[32m+[m[32m            tshirtToUpdate.Price = tshirt.Price;[m
+[32m+[m[32m            tshirtToUpdate.Stock = tshirt.Stock;[m
+[32m+[m[32m            tshirtToUpdate.Season = tshirt.Season;[m
+[32m+[m[32m            tshirtToUpdate.ImageUrl = tshirt.ImageUrl;[m
+ [m
+[32m+[m[32m            _tshirtRepository.SaveChanges();[m
+[32m+[m[32m            return TshirtResponse.FromTshirt(tshirtToUpdate);[m
+ [m
+         }[m
+     }[m

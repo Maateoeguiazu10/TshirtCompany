@@ -1,4 +1,4 @@
-﻿namespace CompanyTshirt.Domain
+﻿namespace CompanyTshirt.Domain.Entities
 {
     public abstract class BaseEntity
     {

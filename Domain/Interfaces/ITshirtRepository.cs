@@ -1,4 +1,5 @@
-﻿using CompanyTshirt.Domain;
+﻿using CompanyTshirt.Domain.Entities;
+
 
 namespace CompanyTshirt.Domain.Interfaces
 {
@@ -6,12 +7,11 @@ namespace CompanyTshirt.Domain.Interfaces
     {
         void Add(Tshirt tshirt);
 
-        IReadOnlyList<Tshirt> GetAll();
+        Task<IReadOnlyList<Tshirt>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Tshirt? GetById(Guid id);
+        Task<Tshirt?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default); 
+        void Remove(Tshirt tshirt);
 
-        void Delete(Tshirt tshirt);
-
-        void SaveChanges();
+        Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,8 @@
+using CompanyTshirt.Application.Abstractions;
+using CompanyTshirt.Application.Services;
+using CompanyTshirt.Domain.Interfaces;
 using CompanyTshirt.Infrastructure.Persistence;
+using CompanyTshirt.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +15,9 @@ builder.Services.AddDbContext<TshirtCompanyDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("TshirtCompanyDb")
     ));
+
+builder.Services.AddScoped<ITshirtService, TshirtService>();
+builder.Services.AddScoped<ITshirtRepository, TshirtRepository>();
 
 var app = builder.Build();
 

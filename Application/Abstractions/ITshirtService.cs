@@ -10,14 +10,24 @@ namespace CompanyTshirt.Application.Abstractions
 {
     public interface ITshirtService
     {
-        List<TshirtResponse> GetAll();
+        Task<TshirtResponse> CreateAsync(
+         TshirtRequest request,
+         CancellationToken cancellationToken = default);
 
-        TshirtResponse? GetById(Guid id);
+        Task<List<TshirtResponse>> GetAllAsync(
+            CancellationToken cancellationToken = default);
 
-        TshirtResponse Create(TshirtRequest tshirt);
+        Task<TshirtResponse?> GetByIdAsync(
+            Guid id,
+            CancellationToken cancellationToken = default);
 
-        TshirtResponse Update(Guid id, TshirtRequest tshirt);
+        Task<TshirtResponse> UpdateAsync(
+            Guid id,
+            TshirtRequest request,
+            CancellationToken cancellationToken = default);
 
-        bool Delete(Guid id);
+        Task<bool> DeleteAsync(
+            Guid id,
+            CancellationToken cancellationToken = default);
     }
 }

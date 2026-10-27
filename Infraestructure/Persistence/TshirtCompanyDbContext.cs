@@ -1,4 +1,4 @@
-﻿using CompanyTshirt.Domain;
+﻿using CompanyTshirt.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CompanyTshirt.Infrastructure.Persistence

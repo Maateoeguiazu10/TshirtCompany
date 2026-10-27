@@ -1,6 +1,4 @@
-﻿
-
-namespace CompanyTshirt.Domain
+﻿namespace CompanyTshirt.Domain.Entities
 {
     public class Brand : BaseEntity
     {

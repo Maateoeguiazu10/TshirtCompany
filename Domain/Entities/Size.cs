@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CompanyTshirt.Domain
+namespace CompanyTshirt.Domain.Entities
 {
-    public class Club : BaseEntity
+    public class Size : BaseEntity
     {
-        public string Name { get; set; } = string.Empty;
+       public string Name { get; set; } = string.Empty;
     }
 }
