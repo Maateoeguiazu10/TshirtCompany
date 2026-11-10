@@ -22,41 +22,49 @@ namespace CompanyTshirt.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CompanyTshirt.Domain.Brand", b =>
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Brand", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DeletedDateTime")
+                    b.Property<DateTime?>("DeletedDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.ToTable("Brands");
                 });
 
-            modelBuilder.Entity("CompanyTshirt.Domain.Club", b =>
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Club", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DeletedDateTime")
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LogoUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -70,19 +78,19 @@ namespace CompanyTshirt.Infrastructure.Migrations
                     b.ToTable("Clubs");
                 });
 
-            modelBuilder.Entity("CompanyTshirt.Domain.Size", b =>
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Size", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DeletedDateTime")
+                    b.Property<DateTime?>("DeletedDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -94,7 +102,7 @@ namespace CompanyTshirt.Infrastructure.Migrations
                     b.ToTable("Sizes");
                 });
 
-            modelBuilder.Entity("CompanyTshirt.Domain.Tshirt", b =>
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Tshirt", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +114,7 @@ namespace CompanyTshirt.Infrastructure.Migrations
                     b.Property<Guid>("ClubId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DeletedDateTime")
+                    b.Property<DateTime?>("DeletedDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -152,21 +160,21 @@ namespace CompanyTshirt.Infrastructure.Migrations
                     b.ToTable("Tshirts");
                 });
 
-            modelBuilder.Entity("CompanyTshirt.Domain.Tshirt", b =>
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Tshirt", b =>
                 {
-                    b.HasOne("CompanyTshirt.Domain.Brand", "Brand")
+                    b.HasOne("CompanyTshirt.Domain.Entities.Brand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CompanyTshirt.Domain.Club", "Club")
+                    b.HasOne("CompanyTshirt.Domain.Entities.Club", "Club")
                         .WithMany()
                         .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CompanyTshirt.Domain.Size", "Size")
+                    b.HasOne("CompanyTshirt.Domain.Entities.Size", "Size")
                         .WithMany()
                         .HasForeignKey("SizeId")
                         .OnDelete(DeleteBehavior.Cascade)

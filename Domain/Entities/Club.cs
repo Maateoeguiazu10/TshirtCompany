@@ -9,5 +9,7 @@ namespace CompanyTshirt.Domain.Entities
     public class Club : BaseEntity
     {
         public string Name { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public string LogoUrl { get; set; } = string.Empty;
     }
 }

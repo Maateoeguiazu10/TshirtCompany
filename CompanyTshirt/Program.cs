@@ -19,6 +19,15 @@ builder.Services.AddDbContext<TshirtCompanyDbContext>(options =>
 builder.Services.AddScoped<ITshirtService, TshirtService>();
 builder.Services.AddScoped<ITshirtRepository, TshirtRepository>();
 
+builder.Services.AddScoped<IBrandService, BrandService>();
+builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+
+builder.Services.AddScoped<IClubService, ClubService>();
+builder.Services.AddScoped<IClubRepository, ClubRepository>();
+
+builder.Services.AddScoped<ISizeService, SizeService>();
+builder.Services.AddScoped<ISizeRepository, SizeRepository>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

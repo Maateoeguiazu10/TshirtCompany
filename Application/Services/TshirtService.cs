@@ -43,20 +43,22 @@ namespace CompanyTshirt.Application.Services
         }
 
         public async Task<bool> DeleteAsync(
-            Guid id,
-            CancellationToken cancellationToken = default)
+       Guid id,
+       CancellationToken cancellationToken = default)
         {
             var tshirt = await _tshirtRepository.GetByIdAsync(id, cancellationToken);
 
             if (tshirt == null)
                 return false;
 
-            _tshirtRepository.Remove(tshirt);
+            tshirt.IsDeleted = true;
+            tshirt.DeletedDateTime = DateTime.UtcNow;
+            tshirt.UpdatedDateTime = DateTime.UtcNow;
+
             await _tshirtRepository.SaveChangesAsync(cancellationToken);
 
             return true;
         }
-
 
         public async Task<List<TshirtResponse>> GetAllAsync(
             CancellationToken cancellationToken = default)
