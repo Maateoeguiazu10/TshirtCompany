@@ -7,10 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Abstractions\Infrastructure\IBaseRepository.cs" />
+    <Compile Remove="Abstractions\Infrastructure\ITshirtRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Domain\CompanyTshirt.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Abstractions\Infrastructure\" />
     <Folder Include="Mapper\" />
   </ItemGroup>
 

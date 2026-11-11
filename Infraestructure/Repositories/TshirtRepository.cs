@@ -1,6 +1,8 @@
-﻿using CompanyTshirt.Domain;
-using CompanyTshirt.Domain.Interfaces;
+﻿using CompanyTshirt.Domain.Interfaces;
+using CompanyTshirt.Domain.Entities;
 using CompanyTshirt.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace CompanyTshirt.Infrastructure.Repositories
 {
@@ -16,24 +18,27 @@ namespace CompanyTshirt.Infrastructure.Repositories
             _context.Tshirts.Add(tshirt);
         }
 
-        public void Delete(Tshirt tshirt)
+        public void Remove(Tshirt tshirt) => _context.Tshirts.Remove(tshirt);
+
+        public async Task<IReadOnlyList<Tshirt>> GetAllAsync(
+    CancellationToken cancellationToken = default)
         {
-            _context.Tshirts.Remove(tshirt);
+            return await _context.Tshirts
+                .Where(t => !t.IsDeleted)
+                .ToListAsync(cancellationToken);
         }
 
-        public IReadOnlyList<Tshirt> GetAll()
+        public Task<Tshirt?> GetByIdAsync(
+            Guid id,
+            CancellationToken cancellationToken = default)
         {
-            return _context.Tshirts.ToList();
+            return _context.Tshirts
+                .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted, cancellationToken);
         }
 
-        public Tshirt? GetById(Guid id)
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-             return _context.Tshirts.FirstOrDefault(t => t.Id == id);
-        }
-
-        public void SaveChanges()
-        {
-            _context.SaveChanges();
+            return _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

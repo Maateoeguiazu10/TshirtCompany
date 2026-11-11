@@ -1,4 +1,4 @@
-﻿using CompanyTshirt.Domain;
+﻿using CompanyTshirt.Domain.Entities;
 
 namespace CompanyTshirt.Application.Responses
 {

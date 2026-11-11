@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CompanyTshirt.Domain
+namespace CompanyTshirt.Application.Requests
 {
-    public class Club : BaseEntity
+    public class SizeRequest
     {
-        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 }

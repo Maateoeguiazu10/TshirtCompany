@@ -1,10 +1,10 @@
-﻿namespace CompanyTshirt.Domain
+﻿namespace CompanyTshirt.Domain.Entities
 {
     public abstract class BaseEntity
     {
         public Guid Id { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime UpdatedDateTime { get; set; }
-        public DateTime DeletedDateTime { get; set; }
+        public DateTime? DeletedDateTime { get; set; }
     }
 }

@@ -1,4 +1,8 @@
+using CompanyTshirt.Application.Abstractions;
+using CompanyTshirt.Application.Services;
+using CompanyTshirt.Domain.Interfaces;
 using CompanyTshirt.Infrastructure.Persistence;
+using CompanyTshirt.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +15,18 @@ builder.Services.AddDbContext<TshirtCompanyDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("TshirtCompanyDb")
     ));
+
+builder.Services.AddScoped<ITshirtService, TshirtService>();
+builder.Services.AddScoped<ITshirtRepository, TshirtRepository>();
+
+builder.Services.AddScoped<IBrandService, BrandService>();
+builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+
+builder.Services.AddScoped<IClubService, ClubService>();
+builder.Services.AddScoped<IClubRepository, ClubRepository>();
+
+builder.Services.AddScoped<ISizeService, SizeService>();
+builder.Services.AddScoped<ISizeRepository, SizeRepository>();
 
 var app = builder.Build();
 
