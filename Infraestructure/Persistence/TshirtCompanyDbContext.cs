@@ -14,6 +14,7 @@ namespace CompanyTshirt.Infrastructure.Persistence
         public DbSet<Brand> Brands => Set<Brand>();
         public DbSet<Size> Sizes => Set<Size>();
         public DbSet<Club> Clubs => Set<Club>();
+        public DbSet<User> Users => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,15 @@ namespace CompanyTshirt.Infrastructure.Persistence
             modelBuilder.Entity<Tshirt>()
                 .Property(t => t.Price)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<User>()
+                .HasDiscriminator<string>("UserType")
+                .HasValue<Customer>("Customer")
+                .HasValue<Admin>("Admin");
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
         }
     }
 }

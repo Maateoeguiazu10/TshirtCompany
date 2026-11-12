@@ -160,6 +160,59 @@ namespace CompanyTshirt.Infrastructure.Migrations
                     b.ToTable("Tshirts");
                 });
 
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+
+                    b.HasDiscriminator<string>("UserType").HasValue("User");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Admin", b =>
+                {
+                    b.HasBaseType("CompanyTshirt.Domain.Entities.User");
+
+                    b.HasDiscriminator().HasValue("Admin");
+                });
+
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Customer", b =>
+                {
+                    b.HasBaseType("CompanyTshirt.Domain.Entities.User");
+
+                    b.HasDiscriminator().HasValue("Customer");
+                });
+
             modelBuilder.Entity("CompanyTshirt.Domain.Entities.Tshirt", b =>
                 {
                     b.HasOne("CompanyTshirt.Domain.Entities.Brand", "Brand")
