@@ -15,13 +15,41 @@ namespace CompanyTshirt.Infrastructure.Persistence
         public DbSet<Size> Sizes => Set<Size>();
         public DbSet<Club> Clubs => Set<Club>();
         public DbSet<User> Users => Set<User>();
-
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderDetail> OrderDetails => Set<OrderDetail>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Tshirt>()
                 .Property(t => t.Price)
+                .HasPrecision(18, 2);
+
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany(u => u.Orders)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.Order)
+                .WithMany(o => o.OrderDetails)
+                .HasForeignKey(od => od.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.Tshirt)
+                .WithMany(t => t.OrderDetails)
+                .HasForeignKey(od => od.TshirtId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<OrderDetail>()
+                .Property(od => od.UnitPrice)
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<User>()

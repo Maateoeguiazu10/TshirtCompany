@@ -3,6 +3,7 @@ using CompanyTshirt.Application.Requests;
 using CompanyTshirt.Application.Responses;
 using CompanyTshirt.Domain.Entities;
 using CompanyTshirt.Domain.Interfaces;
+using CompanyTshirt.Application.Exceptions;
 
 namespace CompanyTshirt.Application.Services
 {
@@ -19,11 +20,14 @@ namespace CompanyTshirt.Application.Services
             ClubRequest request,
             CancellationToken cancellationToken = default)
         {
+            ValidateRequest(request);
+
             var club = new Club
             {
                 Name = request.Name,
                 Country = request.Country,
-                LogoUrl = request.LogoUrl
+                LogoUrl = request.LogoUrl,
+                UpdatedDateTime = DateTime.UtcNow
             };
 
             _clubRepository.Add(club);
@@ -46,24 +50,30 @@ namespace CompanyTshirt.Application.Services
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var club = await _clubRepository.GetByIdAsync(id, cancellationToken);
+            var club = await _clubRepository.GetByIdAsync(
+                id, cancellationToken);
 
             return club is null ? null : ClubResponse.FromClub(club);
         }
 
-        public async Task<ClubResponse?> UpdateAsync(
+        public async Task<ClubResponse> UpdateAsync(
             Guid id,
             ClubRequest request,
             CancellationToken cancellationToken = default)
         {
-            var club = await _clubRepository.GetByIdAsync(id, cancellationToken);
+            ValidateRequest(request);
+
+            var club = await _clubRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (club is null)
-                return null;
+                throw new NotFoundException(
+                    $"No se encontró el club con ID: {id}.");
 
             club.Name = request.Name;
             club.Country = request.Country;
             club.LogoUrl = request.LogoUrl;
+            club.UpdatedDateTime = DateTime.UtcNow;
 
             await _clubRepository.SaveChangesAsync(cancellationToken);
 
@@ -74,15 +84,35 @@ namespace CompanyTshirt.Application.Services
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var club = await _clubRepository.GetByIdAsync(id, cancellationToken);
+            var club = await _clubRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (club is null)
-                return false;
+                throw new NotFoundException(
+                    $"No se encontró el club con ID: {id}.");
 
-            _clubRepository.Remove(club);
+            club.IsDeleted = true;
+            club.DeletedDateTime = DateTime.UtcNow;
+            club.UpdatedDateTime = DateTime.UtcNow;
+
             await _clubRepository.SaveChangesAsync(cancellationToken);
 
             return true;
+        }
+
+        private static void ValidateRequest(ClubRequest request)
+        {
+            if (request == null)
+                throw new ValidationException(
+                    "La solicitud no puede ser nula.");
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException(
+                    "El nombre del club es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(request.Country))
+                throw new ValidationException(
+                    "El país del club es obligatorio.");
         }
     }
 }

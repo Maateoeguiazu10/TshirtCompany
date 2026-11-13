@@ -1,6 +1,8 @@
 ﻿using CompanyTshirt.Application.Abstractions;
+using CompanyTshirt.Application.Constants;
 using CompanyTshirt.Application.Requests;
 using CompanyTshirt.Application.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyTshirt.Presentation.Controllers
@@ -17,20 +19,26 @@ namespace CompanyTshirt.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<ActionResult<ClubResponse>> CreateAsync(
             ClubRequest request,
             CancellationToken cancellationToken = default)
         {
             var club = await _clubService.CreateAsync(request, cancellationToken);
 
-            return Ok(club);
+            return CreatedAtAction(
+                nameof(GetByIdAsync),
+                new { id = club.Id },
+                club);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<ClubResponse>>> GetAllAsync(
             CancellationToken cancellationToken = default)
         {
-            return Ok(await _clubService.GetAllAsync(cancellationToken));
+            var clubs = await _clubService.GetAllAsync(cancellationToken);
+
+            return Ok(clubs);
         }
 
         [HttpGet("{id:guid}")]
@@ -47,6 +55,7 @@ namespace CompanyTshirt.Presentation.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<ActionResult<ClubResponse>> UpdateAsync(
             Guid id,
             ClubRequest request,
@@ -54,21 +63,16 @@ namespace CompanyTshirt.Presentation.Controllers
         {
             var club = await _clubService.UpdateAsync(id, request, cancellationToken);
 
-            if (club is null)
-                return NotFound();
-
             return Ok(club);
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<IActionResult> DeleteAsync(
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var deleted = await _clubService.DeleteAsync(id, cancellationToken);
-
-            if (!deleted)
-                return NotFound();
+            await _clubService.DeleteAsync(id, cancellationToken);
 
             return NoContent();
         }

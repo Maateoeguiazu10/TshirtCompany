@@ -1,7 +1,8 @@
-﻿
-using CompanyTshirt.Application.Abstractions;
+﻿using CompanyTshirt.Application.Abstractions;
+using CompanyTshirt.Application.Constants;
 using CompanyTshirt.Application.Requests;
 using CompanyTshirt.Application.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyTshirt.Presentation.Controllers
@@ -18,13 +19,17 @@ namespace CompanyTshirt.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<ActionResult<BrandResponse>> CreateAsync(
             BrandRequest request,
             CancellationToken cancellationToken = default)
         {
             var brand = await _brandService.CreateAsync(request, cancellationToken);
 
-            return Ok(brand);
+            return CreatedAtAction(
+                nameof(GetByIdAsync),
+                new { id = brand.Id },
+                brand);
         }
 
         [HttpGet]
@@ -50,6 +55,7 @@ namespace CompanyTshirt.Presentation.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<ActionResult<BrandResponse>> UpdateAsync(
             Guid id,
             BrandRequest request,
@@ -61,14 +67,12 @@ namespace CompanyTshirt.Presentation.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<IActionResult> DeleteAsync(
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var deleted = await _brandService.DeleteAsync(id, cancellationToken);
-
-            if (!deleted)
-                return NotFound();
+            await _brandService.DeleteAsync(id, cancellationToken);
 
             return NoContent();
         }

@@ -8,6 +8,8 @@
         public string Email { get; private set; } = string.Empty;
         public string PasswordHash { get; private set; } = string.Empty;
 
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
+
         protected User()
         {
         }
@@ -26,6 +28,8 @@
             Email = email;
             PasswordHash = passwordHash;
         }
+
+        
 
         public void UpdateProfile(string name, string surname, string email)
         {

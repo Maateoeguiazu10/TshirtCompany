@@ -78,6 +78,72 @@ namespace CompanyTshirt.Infrastructure.Migrations
                     b.ToTable("Clubs");
                 });
 
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.OrderDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TshirtId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("TshirtId");
+
+                    b.ToTable("OrderDetails");
+                });
+
             modelBuilder.Entity("CompanyTshirt.Domain.Entities.Size", b =>
                 {
                     b.Property<Guid>("Id")
@@ -213,6 +279,36 @@ namespace CompanyTshirt.Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("Customer");
                 });
 
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Order", b =>
+                {
+                    b.HasOne("CompanyTshirt.Domain.Entities.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.OrderDetail", b =>
+                {
+                    b.HasOne("CompanyTshirt.Domain.Entities.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CompanyTshirt.Domain.Entities.Tshirt", "Tshirt")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("TshirtId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Tshirt");
+                });
+
             modelBuilder.Entity("CompanyTshirt.Domain.Entities.Tshirt", b =>
                 {
                     b.HasOne("CompanyTshirt.Domain.Entities.Brand", "Brand")
@@ -238,6 +334,21 @@ namespace CompanyTshirt.Infrastructure.Migrations
                     b.Navigation("Club");
 
                     b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.Tshirt", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("CompanyTshirt.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

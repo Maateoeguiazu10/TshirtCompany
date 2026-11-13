@@ -1,4 +1,5 @@
 ﻿using CompanyTshirt.Application.Abstractions;
+using CompanyTshirt.Application.Constants;
 using CompanyTshirt.Application.Requests;
 using CompanyTshirt.Application.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace CompanyTshirt.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = Polices.SoloAdministradores)]
     public class UserController(IUserService userService) : ControllerBase
     {
         [HttpGet]
@@ -16,6 +17,7 @@ namespace CompanyTshirt.Presentation.Controllers
             CancellationToken cancellationToken)
         {
             var users = await userService.GetAllAsync(cancellationToken);
+
             return Ok(users);
         }
 
@@ -38,28 +40,14 @@ namespace CompanyTshirt.Presentation.Controllers
             [FromBody] UserUpdateRequest request,
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var user = await userService.UpdateAsync(
-                    id,
-                    request.Name,
-                    request.Surname,
-                    request.Email,
-                    cancellationToken);
+            var user = await userService.UpdateAsync(
+                id,
+                request.Name,
+                request.Surname,
+                request.Email,
+                cancellationToken);
 
-                if (user == null)
-                    return NotFound();
-
-                return Ok(user);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(ex.Message);
-            }
+            return Ok(user);
         }
     }
 }

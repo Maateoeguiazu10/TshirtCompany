@@ -1,6 +1,8 @@
 ﻿using CompanyTshirt.Application.Abstractions;
+using CompanyTshirt.Application.Constants;
 using CompanyTshirt.Application.Requests;
 using CompanyTshirt.Application.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyTshirt.Presentation.Controllers
@@ -17,23 +19,18 @@ namespace CompanyTshirt.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<ActionResult<TshirtResponse>> Create(
             [FromBody] TshirtRequest request,
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var tshirt = await _tshirtService.CreateAsync(request, cancellationToken);
+            var tshirt = await _tshirtService.CreateAsync(
+                request, cancellationToken);
 
-                return CreatedAtAction(
-                    nameof(GetById),
-                    new { id = tshirt.Id },
-                    tshirt);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = tshirt.Id },
+                tshirt);
         }
 
         [HttpGet]
@@ -41,11 +38,6 @@ namespace CompanyTshirt.Presentation.Controllers
             CancellationToken cancellationToken)
         {
             var tshirts = await _tshirtService.GetAllAsync(cancellationToken);
-
-            if (!tshirts.Any())
-            {
-                return NotFound("No hay camisetas registradas.");
-            }
 
             return Ok(tshirts);
         }
@@ -59,49 +51,32 @@ namespace CompanyTshirt.Presentation.Controllers
                 id, cancellationToken);
 
             if (tshirt == null)
-            {
                 return NotFound(
                     $"No existe una camiseta con el id {id}.");
-            }
 
             return Ok(tshirt);
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<ActionResult<TshirtResponse>> Update(
             [FromRoute] Guid id,
             [FromBody] TshirtRequest request,
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var tshirt = await _tshirtService.UpdateAsync(id, request, cancellationToken);
+            var tshirt = await _tshirtService.UpdateAsync(
+                id, request, cancellationToken);
 
-                return Ok(tshirt);
-            }
-            catch (CompanyTshirt.Application.Exceptions.NotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(tshirt);
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Policy = Polices.SoloAdministradores)]
         public async Task<ActionResult> Delete(
             [FromRoute] Guid id,
             CancellationToken cancellationToken)
         {
-            var deleted = await _tshirtService.DeleteAsync(
-                id, cancellationToken);
-
-            if (!deleted)
-            {
-                return NotFound(
-                    $"No existe una camiseta con el id {id}.");
-            }
+            await _tshirtService.DeleteAsync(id, cancellationToken);
 
             return NoContent();
         }

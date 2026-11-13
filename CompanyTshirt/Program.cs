@@ -1,12 +1,15 @@
 using CompanyTshirt.Application.Abstractions;
+using CompanyTshirt.Application.Constants;
 using CompanyTshirt.Application.Services;
 using CompanyTshirt.Domain.Interfaces;
-using CompanyTshirt.Infrastructure.Services;
 using CompanyTshirt.Infrastructure.Persistence;
 using CompanyTshirt.Infrastructure.Repositories;
+using CompanyTshirt.Infrastructure.Services;
+using CompanyTshirt.Presentation.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +66,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
 builder.Services.AddScoped<ITshirtService, TshirtService>();
 builder.Services.AddScoped<ITshirtRepository, TshirtRepository>();
 
@@ -74,6 +80,7 @@ builder.Services.AddScoped<IClubRepository, ClubRepository>();
 
 builder.Services.AddScoped<ISizeService, SizeService>();
 builder.Services.AddScoped<ISizeRepository, SizeRepository>();
+
 
 var jwtSettings = builder.Configuration
     .GetSection("Jwt")
@@ -97,14 +104,24 @@ builder.Services
 
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings.Key)),
+            Encoding.UTF8.GetBytes(jwtSettings.Key)),
 
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.Name
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Polices.SoloAdministradores, policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireRole("Admin");
+    });
+});
 
 
 
@@ -118,6 +135,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 

@@ -3,6 +3,7 @@ using CompanyTshirt.Application.Requests;
 using CompanyTshirt.Application.Responses;
 using CompanyTshirt.Domain.Entities;
 using CompanyTshirt.Domain.Interfaces;
+using CompanyTshirt.Application.Exceptions;
 
 namespace CompanyTshirt.Application.Services
 {
@@ -19,6 +20,8 @@ namespace CompanyTshirt.Application.Services
             SizeRequest request,
             CancellationToken cancellationToken = default)
         {
+            ValidateRequest(request);
+
             var size = new Size
             {
                 Type = request.Type,
@@ -46,7 +49,8 @@ namespace CompanyTshirt.Application.Services
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var size = await _sizeRepository.GetByIdAsync(id, cancellationToken);
+            var size = await _sizeRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (size == null)
                 return null;
@@ -54,15 +58,19 @@ namespace CompanyTshirt.Application.Services
             return SizeResponse.FromSize(size);
         }
 
-        public async Task<SizeResponse?> UpdateAsync(
+        public async Task<SizeResponse> UpdateAsync(
             Guid id,
             SizeRequest request,
             CancellationToken cancellationToken = default)
         {
-            var size = await _sizeRepository.GetByIdAsync(id, cancellationToken);
+            ValidateRequest(request);
+
+            var size = await _sizeRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (size == null)
-                return null;
+                throw new NotFoundException(
+                    $"No se encontró el talle con ID: {id}.");
 
             size.Type = request.Type;
             size.UpdatedDateTime = DateTime.UtcNow;
@@ -76,10 +84,12 @@ namespace CompanyTshirt.Application.Services
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var size = await _sizeRepository.GetByIdAsync(id, cancellationToken);
+            var size = await _sizeRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (size == null)
-                return false;
+                throw new NotFoundException(
+                    $"No se encontró el talle con ID: {id}.");
 
             size.IsDeleted = true;
             size.DeletedDateTime = DateTime.UtcNow;
@@ -88,6 +98,17 @@ namespace CompanyTshirt.Application.Services
             await _sizeRepository.SaveChangesAsync(cancellationToken);
 
             return true;
+        }
+
+        private static void ValidateRequest(SizeRequest request)
+        {
+            if (request == null)
+                throw new ValidationException(
+                    "La solicitud no puede ser nula.");
+
+            if (string.IsNullOrWhiteSpace(request.Type))
+                throw new ValidationException(
+                    "El tipo de talle es obligatorio.");
         }
     }
 }

@@ -16,7 +16,7 @@ namespace CompanyTshirt.Application.Abstractions
             Guid id,
             CancellationToken cancellationToken = default);
 
-        Task<SizeResponse?> UpdateAsync(
+        Task<SizeResponse> UpdateAsync(
             Guid id,
             SizeRequest request,
             CancellationToken cancellationToken = default);

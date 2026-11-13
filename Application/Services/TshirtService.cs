@@ -17,11 +17,12 @@ namespace CompanyTshirt.Application.Services
             _tshirtRepository = tshirtRepository;
         }
 
-
         public async Task<TshirtResponse> CreateAsync(
             TshirtRequest request,
             CancellationToken cancellationToken = default)
         {
+            ValidateRequest(request);
+
             var tshirt = new Tshirt
             {
                 Id = Guid.NewGuid(),
@@ -43,13 +44,15 @@ namespace CompanyTshirt.Application.Services
         }
 
         public async Task<bool> DeleteAsync(
-       Guid id,
-       CancellationToken cancellationToken = default)
+            Guid id,
+            CancellationToken cancellationToken = default)
         {
-            var tshirt = await _tshirtRepository.GetByIdAsync(id, cancellationToken);
+            var tshirt = await _tshirtRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (tshirt == null)
-                return false;
+                throw new NotFoundException(
+                    $"No se encontró la camiseta con ID: {id}.");
 
             tshirt.IsDeleted = true;
             tshirt.DeletedDateTime = DateTime.UtcNow;
@@ -74,7 +77,8 @@ namespace CompanyTshirt.Application.Services
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var tshirt = await _tshirtRepository.GetByIdAsync(id, cancellationToken);
+            var tshirt = await _tshirtRepository.GetByIdAsync(
+                id, cancellationToken);
 
             return tshirt == null
                 ? null
@@ -86,13 +90,14 @@ namespace CompanyTshirt.Application.Services
             TshirtRequest request,
             CancellationToken cancellationToken = default)
         {
-            var tshirtToUpdate = await _tshirtRepository.GetByIdAsync(id, cancellationToken);
+            ValidateRequest(request);
+
+            var tshirtToUpdate = await _tshirtRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (tshirtToUpdate == null)
-            {
                 throw new NotFoundException(
-                    $"This ID was not found:  '{id}'.");
-            }
+                    $"No se encontró la camiseta con ID: {id}.");
 
             tshirtToUpdate.Name = request.Name;
             tshirtToUpdate.Description = request.Description;
@@ -108,8 +113,20 @@ namespace CompanyTshirt.Application.Services
 
             return TshirtResponse.FromTshirt(tshirtToUpdate);
         }
+
+        private static void ValidateRequest(TshirtRequest request)
+        {
+            if (request == null)
+                throw new ValidationException("La solicitud no puede ser nula.");
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException("El nombre es obligatorio.");
+
+            if (request.Price <= 0)
+                throw new ValidationException("El precio debe ser mayor a cero.");
+
+            if (request.Stock < 0)
+                throw new ValidationException("El stock no puede ser negativo.");
+        }
     }
 }
-
-
-  

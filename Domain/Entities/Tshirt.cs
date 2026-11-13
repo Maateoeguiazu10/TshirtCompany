@@ -9,6 +9,7 @@
         public int Stock { get; set; } = 0;
         public string Season { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
+
         public Guid BrandId { get; set; }
         public Brand? Brand { get; set; }
 
@@ -18,5 +19,7 @@
         public Guid ClubId { get; set; }
         public Club? Club { get; set; }
 
+        public ICollection<OrderDetail> OrderDetails { get; set; }
+            = new List<OrderDetail>();
     }
 }

@@ -15,25 +15,10 @@ namespace CompanyTshirt.Presentation.Controllers
         public async Task<ActionResult<ExchangeRateResponse>> GetUsdToArs(
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var exchangeRate = await exchangeRateService.GetUsdToArsAsync(
-                    cancellationToken);
+            var exchangeRate = await exchangeRateService.GetUsdToArsAsync(
+                cancellationToken);
 
-                return Ok(exchangeRate);
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(
-                    StatusCodes.Status502BadGateway,
-                    "No se pudo consultar la API de cotizaciones.");
-            }
-            catch (TaskCanceledException)
-            {
-                return StatusCode(
-                    StatusCodes.Status504GatewayTimeout,
-                    "La API de cotizaciones tardó demasiado en responder.");
-            }
+            return Ok(exchangeRate);
         }
     }
 }

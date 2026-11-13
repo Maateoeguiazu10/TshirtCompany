@@ -12,7 +12,7 @@ namespace CompanyTshirt.Application.Abstractions
             Guid id,
             CancellationToken cancellationToken = default);
 
-        Task<UserResponse?> UpdateAsync(
+        Task<UserResponse> UpdateAsync(
             Guid id,
             string name,
             string surname,

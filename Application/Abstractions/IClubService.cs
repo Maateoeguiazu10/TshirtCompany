@@ -16,7 +16,7 @@ namespace CompanyTshirt.Application.Abstractions
             Guid id,
             CancellationToken cancellationToken = default);
 
-        Task<ClubResponse?> UpdateAsync(
+        Task<ClubResponse> UpdateAsync(
             Guid id,
             ClubRequest request,
             CancellationToken cancellationToken = default);

@@ -3,6 +3,7 @@ using CompanyTshirt.Application.Requests;
 using CompanyTshirt.Application.Responses;
 using CompanyTshirt.Domain.Entities;
 using CompanyTshirt.Domain.Interfaces;
+using CompanyTshirt.Application.Exceptions;
 
 namespace CompanyTshirt.Application.Services
 {
@@ -19,6 +20,8 @@ namespace CompanyTshirt.Application.Services
             BrandRequest request,
             CancellationToken cancellationToken = default)
         {
+            ValidateRequest(request);
+
             var brand = new Brand
             {
                 Name = request.Name,
@@ -46,7 +49,8 @@ namespace CompanyTshirt.Application.Services
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var brand = await _brandRepository.GetByIdAsync(id, cancellationToken);
+            var brand = await _brandRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (brand == null)
                 return null;
@@ -59,15 +63,18 @@ namespace CompanyTshirt.Application.Services
             BrandRequest request,
             CancellationToken cancellationToken = default)
         {
-            var brand = await _brandRepository.GetByIdAsync(id, cancellationToken);
+            ValidateRequest(request);
+
+            var brand = await _brandRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (brand == null)
-                throw new KeyNotFoundException("Brand not found.");
+                throw new NotFoundException(
+                    $"No se encontró la marca con ID: {id}.");
 
             brand.Name = request.Name;
             brand.UpdatedDateTime = DateTime.UtcNow;
 
-            await _brandRepository.SaveChangesAsync(cancellationToken);
             await _brandRepository.SaveChangesAsync(cancellationToken);
 
             return BrandResponse.FromBrand(brand);
@@ -77,10 +84,12 @@ namespace CompanyTshirt.Application.Services
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            var brand = await _brandRepository.GetByIdAsync(id, cancellationToken);
+            var brand = await _brandRepository.GetByIdAsync(
+                id, cancellationToken);
 
             if (brand == null)
-                return false;
+                throw new NotFoundException(
+                    $"No se encontró la marca con ID: {id}.");
 
             brand.IsDeleted = true;
             brand.DeletedDateTime = DateTime.UtcNow;
@@ -89,6 +98,17 @@ namespace CompanyTshirt.Application.Services
             await _brandRepository.SaveChangesAsync(cancellationToken);
 
             return true;
+        }
+
+        private static void ValidateRequest(BrandRequest request)
+        {
+            if (request == null)
+                throw new ValidationException(
+                    "La solicitud no puede ser nula.");
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException(
+                    "El nombre de la marca es obligatorio.");
         }
     }
 }

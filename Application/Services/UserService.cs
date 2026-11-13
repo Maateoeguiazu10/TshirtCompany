@@ -1,7 +1,7 @@
 ﻿using CompanyTshirt.Application.Abstractions;
 using CompanyTshirt.Application.Responses;
 using CompanyTshirt.Domain.Interfaces;
-
+using CompanyTshirt.Application.Exceptions;
 
 namespace CompanyTshirt.Application.Services
 {
@@ -38,17 +38,27 @@ namespace CompanyTshirt.Application.Services
                 user.GetType().Name);
         }
 
-        public async Task<UserResponse?> UpdateAsync(
+        public async Task<UserResponse> UpdateAsync(
             Guid id,
             string name,
             string surname,
             string email,
             CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ValidationException("El nombre es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(surname))
+                throw new ValidationException("El apellido es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ValidationException("El email es obligatorio.");
+
             var user = await usersRepository.GetByIdAsync(id, cancellationToken);
 
             if (user == null)
-                return null;
+                throw new NotFoundException(
+                    $"No se encontró el usuario con ID: {id}.");
 
             var normalizedEmail = email.Trim().ToLowerInvariant();
 
@@ -56,7 +66,7 @@ namespace CompanyTshirt.Application.Services
                 normalizedEmail, cancellationToken);
 
             if (existingUser != null && existingUser.Id != user.Id)
-                throw new InvalidOperationException("Ese email ya está registrado.");
+                throw new ConflictException("Ese email ya está registrado.");
 
             user.UpdateProfile(name, surname, normalizedEmail);
 
