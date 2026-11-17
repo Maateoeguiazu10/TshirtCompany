@@ -26,7 +26,10 @@ namespace CompanyTshirt.Presentation.Controllers
         {
             var brand = await _brandService.CreateAsync(request, cancellationToken);
 
-            return Ok(brand);
+            return CreatedAtAction(
+                nameof(GetByIdAsync),
+                new { id = brand.Id },
+                brand);
         }
 
         [HttpGet]
@@ -38,7 +41,7 @@ namespace CompanyTshirt.Presentation.Controllers
             return Ok(brands);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = nameof(GetByIdAsync))]
         public async Task<ActionResult<BrandResponse>> GetByIdAsync(
             Guid id,
             CancellationToken cancellationToken = default)
