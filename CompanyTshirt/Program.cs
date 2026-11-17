@@ -2,6 +2,7 @@ using CompanyTshirt.Application.Abstractions;
 using CompanyTshirt.Application.Constants;
 using CompanyTshirt.Application.Services;
 using CompanyTshirt.Domain.Interfaces;
+using CompanyTshirt.Infrastructure.Data;
 using CompanyTshirt.Infrastructure.Persistence;
 using CompanyTshirt.Infrastructure.Repositories;
 using CompanyTshirt.Infrastructure.Services;
@@ -123,11 +124,15 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-
+builder.Services.AddScoped<AdminSeeder>();
 
 var app = builder.Build();
 
-
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<AdminSeeder>();
+    await seeder.SeedAsync();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
