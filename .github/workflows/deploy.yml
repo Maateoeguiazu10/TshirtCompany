@@ -38,12 +38,13 @@ jobs:
 
       - name: Install EF Core tools
         if: github.event_name != 'pull_request'
-        run: dotnet tool install --global dotnet-ef --version 10.0.0
+        run: dotnet tool install --global dotnet-ef --version 10.0.15
 
       - name: Apply database migrations
         if: github.event_name != 'pull_request'
         env:
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+          Jwt__Key: ${{ secrets.JWT_KEY }}
         run: dotnet ef database update --project ${{ env.MIGRATIONS_PROJECT }} --startup-project ${{ env.STARTUP_PROJECT }} --connection "$DB_CONNECTION_STRING"
 
       - name: Deploy to Azure App Service
