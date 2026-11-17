@@ -11,11 +11,12 @@ namespace CompanyTshirt.Infrastructure.Data
 	{
 		public async Task SeedAsync(
 			CancellationToken cancellationToken = default)
-
-			var enabled = configuration.GetValue<bool>("AdminSeed:Enabled");
-
-			if (!enabled) return;
 		{
+			var enabled = bool.TryParse(configuration["AdminSeed:Enabled"],out var result) && result;
+
+			if (!enabled)
+				return;
+
 			var name = configuration["AdminSeed:Name"];
 			var surname = configuration["AdminSeed:Surname"];
 			var email = configuration["AdminSeed:Email"];
