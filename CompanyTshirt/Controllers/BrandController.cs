@@ -26,10 +26,7 @@ namespace CompanyTshirt.Presentation.Controllers
         {
             var brand = await _brandService.CreateAsync(request, cancellationToken);
 
-            return CreatedAtAction(
-                nameof(GetByIdAsync),
-                new { id = brand.Id },
-                brand);
+            return Ok(brand);
         }
 
         [HttpGet]
