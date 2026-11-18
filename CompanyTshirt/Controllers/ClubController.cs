@@ -26,10 +26,10 @@ namespace CompanyTshirt.Presentation.Controllers
         {
             var club = await _clubService.CreateAsync(request, cancellationToken);
 
-            return CreatedAtAction(
-                nameof(GetByIdAsync),
-                new { id = club.Id },
-                club);
+            return CreatedAtRoute(
+                      "GetClubById",
+                      new { id = club.Id },
+                      club);
         }
 
         [HttpGet]
@@ -41,7 +41,7 @@ namespace CompanyTshirt.Presentation.Controllers
             return Ok(clubs);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetClubById")]
         public async Task<ActionResult<ClubResponse>> GetByIdAsync(
             Guid id,
             CancellationToken cancellationToken = default)

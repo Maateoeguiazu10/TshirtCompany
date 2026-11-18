@@ -26,10 +26,10 @@ namespace CompanyTshirt.Presentation.Controllers
         {
             var size = await _sizeService.CreateAsync(request, cancellationToken);
 
-            return CreatedAtAction(
-                nameof(GetByIdAsync),
-                new { id = size.Id },
-                size);
+            return CreatedAtRoute(
+                    "GetSizeById",
+                    new { id = size.Id },
+                    size);
         }
 
         [HttpGet]
@@ -41,7 +41,7 @@ namespace CompanyTshirt.Presentation.Controllers
             return Ok(sizes);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetSizeById")]
         public async Task<ActionResult<SizeResponse>> GetByIdAsync(
             Guid id,
             CancellationToken cancellationToken = default)

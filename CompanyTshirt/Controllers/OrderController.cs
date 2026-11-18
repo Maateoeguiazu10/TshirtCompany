@@ -30,13 +30,13 @@ namespace CompanyTshirt.Presentation.Controllers
             var order = await _orderService.CreateAsync(
                 request, userId, cancellationToken);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = order.Id },
-                order);
+            return CreatedAtRoute(
+                        "GetOrderById",
+                        new { id = order.Id },
+                        order);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetOrderById")]
         public async Task<ActionResult<OrderResponse>> GetById(
             [FromRoute] Guid id,
             CancellationToken cancellationToken)

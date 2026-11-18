@@ -42,7 +42,7 @@ namespace CompanyTshirt.Presentation.Controllers
             return Ok(tshirts);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetTShirtById")]
         public async Task<ActionResult<TshirtResponse>> GetById(
             [FromRoute] Guid id,
             CancellationToken cancellationToken)
